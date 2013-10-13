@@ -1,0 +1,106 @@
+
+#KERNELDIR= environment variable is set by the build.sh script.
+
+# lib directory makefile
+
+#.PHONY: libs objs
+
+AFLAGS=
+
+ifeq ($(PLATFORM),AIX)
+	AFLAGS=-X64
+endif
+
+.PHONY: all
+
+all: libs objs
+
+# libusrd.a is the application library
+# libdrvd.a is the driver library
+#libs := libusrd.a  libdrvd.a
+libs := libusrd.a 
+#objs := commond.o common.o usrlib.o drvlib.o lindrv.o linusr.o
+objs :=  common.o usrlib.o  linusr.o
+
+libs: $(libs)
+objs: $(objs)
+
+clean:
+	rm -f $(libs) *.o
+
+
+
+##############################
+# Generic Stuff  
+#####
+
+# Stuff common to both libraries
+# this is for code which runs all platforms, linux, windows, 
+# drivers, applications, etc.  It is the most generic code
+# of all.
+common.o: ../common.c 
+	gcc $(MYDEFS) $(SBC) $(DEBUGMODE) $(KERNELVER) $(APPM) -c $(PPCMODE) -I $(TOPDIR)/inc  -I $(TOPDIR)/inc/linux ../common.c -o common.o
+
+#commond.o: ../commond.c 
+#	gcc -c  -nostdinc -isystem  $(PPCMODE) -D __KERNEL__ -I /usr/src/linux/include -I $(TOPDIR)/inc  -I $(TOPDIR)/inc/linux ../commond.c -o commond.o
+
+
+
+
+# Stuff for the user library
+# this is stuff which is generic to all applications regardless
+# of platform. eg. windows or linux.
+usrlib.o: ../usrlib.c 
+	gcc $(MYDEFS) $(SBC) $(DEBUGMODE) $(KERNELVER) $(APPM) -c $(PPCMODE) -I $(TOPDIR)/inc -I $(TOPDIR)/inc/linux -c ../usrlib.c -o usrlib.o
+
+
+
+# Stuff for the driver library
+# this is stuff which is generic to all drivers regardless
+# of platform. eg. windows or linux.
+#drvlib.o: ../drvlib.c 
+#	gcc -c $(PPCMODE) -D __KERNEL__ -I /usr/src/linux/include -I $(TOPDIR)/inc -c ../drvlib.c -o drvlib.o
+
+
+##############################
+# Application Stuff
+#####
+
+# stuff specific to linux user code
+# if you have code which is shared between two different applications
+# running on linux it goes in here.
+linusr.o: linusr.c 
+	gcc $(MYDEFS) $(SBC) $(DEBUGMODE) $(KERNELVER) $(APPM) -c $(PPCMODE) -I $(TOPDIR)/inc -I $(TOPDIR)/inc/linux -c linusr.c -lreadline -o linusr.o 
+
+
+
+##############################
+# Driver Stuff
+#####
+
+
+# stuff specific to linux driver code
+# if you have code which is shared between two different drivers
+# running on linux it goes in here.
+#lindrv.o: lindrv.c 
+#	gcc -c -D __KERNEL__ $(PPCMODE) -I /usr/src/linux/include -I $(TOPDIR)/inc  lindrv.c -o lindrv.o
+
+
+
+
+##############################
+# The actual libraries
+#####
+
+
+libusrd.a: common.o  usrlib.o  linusr.o
+	ar $(AFLAGS) rcs  libusrd.a  common.o usrlib.o linusr.o 
+
+
+#libdrvd.a: commond.o drvlib.o lindrv.o
+#	ar rcs libdrvd.a  commond.o drvlib.o lindrv.o
+
+
+
+
+
