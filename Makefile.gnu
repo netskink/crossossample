@@ -7,7 +7,7 @@
 
 
 .PHONY: all lib apps driver
-# all: dbgdriver.o apps
+# all: testyriver.o apps
 all: lib driver apps
 
 apps: 

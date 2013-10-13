@@ -16,8 +16,8 @@ endif
 all: libs objs
 
 # libusrd.a is the application library
-# libdrvd.a is the driver library
-#libs := libusrd.a  libdrvd.a
+# libtestd.a is the driver library
+#libs := libusrd.a  libtestd.a
 libs := libusrd.a 
 #objs := commond.o common.o usrlib.o drvlib.o lindrv.o linusr.o
 objs :=  common.o usrlib.o  linusr.o
@@ -97,8 +97,8 @@ libusrd.a: common.o  usrlib.o  linusr.o
 	ar $(AFLAGS) rcs  libusrd.a  common.o usrlib.o linusr.o 
 
 
-#libdrvd.a: commond.o drvlib.o lindrv.o
-#	ar rcs libdrvd.a  commond.o drvlib.o lindrv.o
+#libtestd.a: commond.o drvlib.o lindrv.o
+#	ar rcs libtestd.a  commond.o drvlib.o lindrv.o
 
 
 
